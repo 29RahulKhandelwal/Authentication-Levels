@@ -1,7 +1,10 @@
+require("dotenv").config();
 const express=require("express");
 const app=express();
 const ejs=require("ejs");
 const mongoose=require("mongoose");
+const encryption=require("mongoose-encryption");
+
 
 app.set("view engine","ejs");
 app.use(express.static("public"));
@@ -9,10 +12,12 @@ app.use(express.urlencoded({extended:true}));
 
 mongoose.connect("mongodb://localhost:27017/userDB",{useNewUrlParser:true,useUnifiedTopology:true});
 
-const userSchema=mongoose.Schema({
+const userSchema=new mongoose.Schema({
     email:String,
     password:String
 });
+
+userSchema.plugin(encryption,{secret:process.env.SECRET, encryptedFields:["password"]});
 
 const User=mongoose.model("User",userSchema);
 
